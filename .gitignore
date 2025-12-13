@@ -1,0 +1,20 @@
+# Objetos y binarios
+*.o
+*.a
+*.so
+*.out
+*.exe
+
+# Archivos temporales
+*.log
+*.tmp
+
+# Carpetas de build
+build/
+bin/
+obj/
+
+# VS Code
+.vscode/
+
+.dat 

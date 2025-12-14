@@ -15,8 +15,8 @@ uint64_t Autenticador::simpleHash(const string& s)const {
     return h;
 }
 
-bool Autenticador::fileExists()const{
-    ifstream f(filename, ios::binary);
+bool Autenticador::fileExists()const {
+    std::ifstream f(filename, std::ios::binary);
     return f.good();
 }
 

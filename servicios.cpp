@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdint>
+#include <algorithm>
 
 using namespace std;
 
@@ -66,13 +67,29 @@ Usuario leerUsuario(const string& filename){
     f.close();
     return user;
  }
+ void borrarServicio(Usuario& user){
+    Usuario updatedUser = user;
+    auto& entries = updatedUser.entradas;
+    string servicioBorrar;
+    cout<<"Servicio a borrar: ";
+    getline(cin,servicioBorrar);
+
+    entries.erase(
+        remove_if(entries.begin(), entries.end(),
+                  [&servicioBorrar](const Entry& entry) {
+                      return entry.servicio == servicioBorrar;
+                  }),
+        entries.end()
+    );
+    user = updatedUser;
+}
 
 void agregarServicio(Usuario& user){
     string servicio, contrasena;
     cout<<"Ingrese el nuevo servicio: ";
-    cin>>servicio;
+    getline(cin,servicio);
     cout<<"Ingrese la contrasena para "<<servicio<<": ";
-    cin>>contrasena;
+    getline(cin,contrasena);
 
     user.entradas.push_back({servicio, contrasena});
 }

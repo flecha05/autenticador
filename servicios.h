@@ -18,7 +18,7 @@ struct Usuario{
 
 void guardarUsuario(const Usuario& user, const string& filename);
 Usuario leerUsuario(const string& filename);
-
+void borrarServicio(Usuario& user);
 void agregarServicio(Usuario& user);
 void verServicios(Usuario& user);
 

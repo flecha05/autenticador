@@ -8,31 +8,36 @@
 using namespace std;
 
 int main(){
-    const string authPass = "authArchivo.dat";
-
-    cout<<"----------GESTOR DE CONTRASENAS----------"<<endl;
+    string nombreUsuario;
     
-    cout<<"Verifique su identidad."<<endl;
+    cout<<"----------GESTOR DE CONTRASENAS----------"<<endl;
+    //Solicito el nombre del usuario para cargar sus archivos
+    cout<<"Usuario: ";
+    getline(cin,nombreUsuario);
+    string authPass = nombreUsuario+"_auth.dat";
+    string contrasenas = nombreUsuario + "_contras.dat";
+
+    //Autentifico al usuario con su contrasena maestra o se crea contrasena
     Autenticador auth(authPass);
     if(!auth.autenticar()){
         cout<<"Limite de intentos. Saliendo del sistema"<<endl;
         return 1;
     }
-
-    //Ya se verifico la contrasena
+    
     Usuario user;
-
-    if (fileExists("contrasenas.dat")) {
-        user = leerUsuario("contrasenas.dat");
+    //Cargo los servicios del usuario si existen o comienza a crearlos
+    if (fileExists(contrasenas)) {
+        user = leerUsuario(contrasenas);
     } else {
-        user.nombre = "user1";
+        user.nombre = nombreUsuario;
     }
-
+    //Menu para gestionar los servicios--PROXIMO PASO ENCAPSULAR EN FUNCION
     int choice=0;
     string accion;
     string c="y";
     
     do{
+    guardarUsuario(user, contrasenas);
     cout<<endl<<"Indique que desea hacer: "<<endl;
     cout<<"1. Agregar nuevo servicio "<<endl;
     cout<<"2. Ver servicios guardados "<<endl;
@@ -55,16 +60,16 @@ int main(){
             cout<<"Quiere agregar nuevos servicios? (y/n): ";
             getline(cin,c);
         }while(c=="y" || c=="Y");
-        guardarUsuario(user, "contrasenas.dat");
+        guardarUsuario(user, contrasenas);
         cout<<"Servicios guardados correctamente."<<endl;
         break;
     case 2:
-        verServicios(user);
+        verServicios(user,contrasenas);
         break;
     case 3:
         {
             borrarServicio(user);
-            guardarUsuario(user, "contrasenas.dat");
+            guardarUsuario(user, contrasenas);
             cout<<"Servicio borrado."<<endl;
         }
         break;

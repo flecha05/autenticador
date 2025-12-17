@@ -8,7 +8,7 @@ using namespace std;
 
 class Autenticador {
     public:
-        explicit Autenticador(const string& filename="authArchivo.dat");
+        explicit Autenticador(const string& filename);
         bool autenticar();
 
         private:

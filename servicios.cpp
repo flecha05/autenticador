@@ -93,8 +93,8 @@ void agregarServicio(Usuario& user){
 
     user.entradas.push_back({servicio, contrasena});
 }
-void verServicios(Usuario& user){
-    Usuario infoUsuario = leerUsuario("contrasenas.dat");
+void verServicios(Usuario& user,const string& filename){
+    Usuario infoUsuario = leerUsuario(filename);
     cout<<"Usuario: "+infoUsuario.nombre<<endl;
     for(const auto& entry : infoUsuario.entradas){
         cout<<"Servicio: "+entry.servicio+" - Contrasena: "+entry.contrasena<<endl;

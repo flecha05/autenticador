@@ -9,7 +9,13 @@
 using namespace std;
 
 
-
+string cifrar(std::string s) {
+    constexpr char CLAVE = 0x5A; 
+    for (char& c : s) {
+        c ^= CLAVE;
+    }
+    return s;
+}
 void guardarUsuario(const Usuario& user, const string& filename){
     ofstream f(filename, ios::binary);
 
@@ -91,12 +97,14 @@ void agregarServicio(Usuario& user){
     cout<<"Ingrese la contrasena para "<<servicio<<": ";
     getline(cin,contrasena);
 
+    contrasena = cifrar(contrasena);
     user.entradas.push_back({servicio, contrasena});
 }
 void verServicios(Usuario& user,const string& filename){
     Usuario infoUsuario = leerUsuario(filename);
     cout<<"Usuario: "+infoUsuario.nombre<<endl;
     for(const auto& entry : infoUsuario.entradas){
+        string contrasena = cifrar(entry.contrasena);
         cout<<"Servicio: "+entry.servicio+" - Contrasena: "+entry.contrasena<<endl;
     }
 }

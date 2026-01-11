@@ -7,6 +7,7 @@
 using namespace std;
 
 int main(){
+    /*
     string nombreUsuario;
     
     cout<<"----------GESTOR DE CONTRASENAS----------"<<endl;
@@ -25,6 +26,20 @@ int main(){
     //YA SE INGRESO AL SISTEMA_ IMPLEMENTAR MENU DE GESTION DE CONTRASENAS
 
     menuPrincipal(nombreUsuario, contrasenas);
+*/
+try {
+        Autenticador auth("auth.dat");
+
+        if (auth.autenticar()) {
+            std::cout << "Autenticacion exitosa\n";
+        } else {
+            std::cout << "Password incorrecta\n";
+        }
+
+    } catch (const std::exception& e) {
+        std::cerr << "Error fatal: " << e.what() << '\n';
+        return 1;
+    }
 
     return 0;
 }

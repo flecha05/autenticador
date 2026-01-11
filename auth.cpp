@@ -1,19 +1,17 @@
 #include "auth.h"
 #include <iostream>
 #include <fstream>
+#include <sodium.h>
+
 
 using namespace std;
 
-Autenticador::Autenticador(const string& filename): filename(filename) {}
-
-uint64_t Autenticador::simpleHash(const string& s)const {
-    uint64_t h=1469598103934665603ULL; //tenemos un valor fjo
-    for(char c : s){
-        h^=c; // con el XOR entre C y H mezacla los bits
-        h*=1099511628211ULL;//multiplicamos para realiar un cambio mayor
-} 
-    return h;
+Autenticador::Autenticador(const string& filename): filename(filename) {
+    if (sodium_init() < 0) {
+        throw runtime_error("Error al inicializar libsodium");
+    }
 }
+
 
 bool Autenticador::fileExists()const {
     std::ifstream f(filename, std::ios::binary);
@@ -25,14 +23,9 @@ void Autenticador::crearMasterPassword(){
     cout<<"Crear contrasena maestra: ";
     getline(cin, contra);
 
-    authArchivo auth;
-    auth.hash = simpleHash(contra);
-
-    ofstream f(filename, ios::binary);
-    f.write(reinterpret_cast<const char*>(&auth), sizeof(auth));
-    f.close();
-
-    cout<<"Contrasena creada"<<endl;
+    string hash = hashContrasena(contra);
+    ofstream f(filename);
+    f<<hash;
 }
 /*
   ofstream: abre o crea el archivo y escribe los datos de auth-Guarda en binario
@@ -43,30 +36,43 @@ void Autenticador::crearMasterPassword(){
   leo-->archivo-->memoria
 */
 
-bool Autenticador::verificarContra()const{
-    authArchivo auth;
-    ifstream f(filename, ios::binary);
-    f.read(reinterpret_cast<char*>(&auth), sizeof(auth));
-    f.close();
-
-    for (int intentos=0; intentos<3; ++intentos){
-        string contra;
-        cout<<"Ingresar contrasena: ";
-        getline(cin, contra);
-
-        if(simpleHash(contra) == auth.hash){
-            cout<<"Acceso concedido"<<endl;
-            return true;
-        } else {
-            cout<<"Contrasena incorrecta"<<endl;
-        }
-    }
-    return false;
+bool Autenticador::verificarContra(const string& hashGuardado)const{
+    string contra;
+    cout<<"Ingresar contrasena maestra: ";
+    getline(cin, contra);
+    return verificarHash(contra, hashGuardado);
 }
 
 bool Autenticador::autenticar(){
     if(!fileExists()){
         crearMasterPassword();
+        return true;
     }
-    return verificarContra();
+    ifstream f(filename);
+    string hashGuardado;
+    getline(f, hashGuardado);
+
+    return verificarContra(hashGuardado);
+}
+
+string Autenticador::hashContrasena(const string& contrasena)const{
+    char hash[crypto_pwhash_STRBYTES];
+
+    if (crypto_pwhash_str(
+            hash,
+            contrasena.c_str(),
+            contrasena.size(),
+            OPSLIMIT,
+            MEMLIMIT
+        ) != 0) {
+        throw runtime_error("Error al hashear la contrasena");
+    }
+    return string(hash);
+}
+bool Autenticador::verificarHash(const string& contrasena, const string& hashGuardado)const{
+   return crypto_pwhash_str_verify(
+        hashGuardado.c_str(),
+        contrasena.c_str(),
+        contrasena.size()
+    ) == 0;
 }

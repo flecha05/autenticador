@@ -9,7 +9,7 @@
 using namespace std;
 
 
-string cifrar(std::string s) {
+string cifrar(std::string s) {//Modificacion simple de las contrasenas antes de guardarlas y reversible al leerlas
     constexpr char CLAVE = 0x5A; 
     for (char& c : s) {
         c ^= CLAVE;
